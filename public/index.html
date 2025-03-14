@@ -52,28 +52,33 @@
 
     <script>
         // Captura o envio do formulário
-        document.getElementById('formCadastro').addEventListener('submit', function(event) {
+        document.getElementById('formCadastro').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
 
-            fetch('/cadastro', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ nome, email, senha })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
+            try {
+                const resposta = await fetch('http://localhost:3000/cadastro', { // <-- ALTERADO AQUI!
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nome, email, senha })
+                });
+
+                const data = await resposta.json();
+
+                if (resposta.ok) {
                     alert(data.message); // Mostra mensagem de sucesso
                 } else {
-                    alert(data.error); // Exibe erro caso exista
+                    alert(`Erro: ${data.error}`); // Exibe erro caso exista
                 }
-            });
+            } catch (error) {
+                alert('Erro ao conectar ao servidor.');
+                console.error(error);
+            }
         });
     </script>
 </body>
